@@ -26,12 +26,12 @@ const PAGE_SIZE = 20;
 const SORT_OPTIONS = [
   { value: "amount", label: "Amount" },
   { value: "currency_id", label: "Currency ID" },
-];
+] as const;
 
 const ORDER_OPTIONS = [
   { value: "asc", label: "Ascending" },
   { value: "desc", label: "Descending" },
-];
+] as const;
 
 type SortBy = (typeof SORT_OPTIONS)[number]["value"];
 type SortOrder = (typeof ORDER_OPTIONS)[number]["value"];
