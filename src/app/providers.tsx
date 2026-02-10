@@ -23,6 +23,10 @@ function ThemeBridge({ children }: { children: ReactNode }) {
       "partner-light",
       "partner-dark",
     ];
+    const palette =
+      theme === "dark"
+        ? { background: "#0b0b0b", foreground: "#e2e8f0" }
+        : { background: "#f8fafc", foreground: "#0f172a" };
 
     document.documentElement.setAttribute("data-theme", themeName);
     document.body.setAttribute("data-theme", themeName);
@@ -32,6 +36,14 @@ function ThemeBridge({ children }: { children: ReactNode }) {
     document.body.classList.add(themeName);
     document.documentElement.classList.toggle("dark", theme === "dark");
     document.documentElement.style.colorScheme = theme;
+    document.documentElement.style.setProperty(
+      "--app-background",
+      palette.background,
+    );
+    document.documentElement.style.setProperty(
+      "--app-foreground",
+      palette.foreground,
+    );
   }, [accountType, theme]);
 
   return <>{children}</>;
