@@ -52,8 +52,11 @@ Auth state is persisted in `sessionStorage`.
 
 ## Testing
 
-No automated tests added yet. Bonus items (hook unit tests and component tests)
-can be added in `src/hooks/__tests__` and `src/components/__tests__`.
+```bash
+npm run test
+```
+
+Tests live in `src/hooks/__tests__` and `src/components/__tests__`.
 
 ## CI
 
