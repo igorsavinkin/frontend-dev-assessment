@@ -35,6 +35,17 @@ Partner:
 
 Auth state is persisted in `sessionStorage`.
 
+## MockAPI
+
+Base URL: `https://653fb0ea9e8bd3be29e10cd4.mockapi.io/api/v1`
+
+Examples:
+
+```bash
+curl "https://653fb0ea9e8bd3be29e10cd4.mockapi.io/api/v1/currencies"
+curl "https://653fb0ea9e8bd3be29e10cd4.mockapi.io/api/v1/balances?page=1&limit=20&sortBy=amount&order=desc"
+```
+
 ## Architecture notes
 
 - State management: React Context + hooks to keep the footprint small and explicit.
