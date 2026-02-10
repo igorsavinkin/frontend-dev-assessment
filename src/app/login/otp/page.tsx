@@ -1,8 +1,8 @@
 "use client";
 
-import { Button, InputOtp } from "@heroui/react";
+import { Button, Input } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { AUTH_PENDING_KEY, validateOtp, type PendingAuth } from "@/lib/auth";
@@ -10,7 +10,11 @@ import { AUTH_PENDING_KEY, validateOtp, type PendingAuth } from "@/lib/auth";
 export default function OtpPage() {
   const router = useRouter();
   const { setUser } = useAuth();
-  const [pending] = useState<PendingAuth | null>(() => {
+  const [otp, setOtp] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const pending = useMemo<PendingAuth | null>(() => {
     if (typeof window === "undefined") {
       return null;
     }
@@ -26,10 +30,7 @@ export default function OtpPage() {
       sessionStorage.removeItem(AUTH_PENDING_KEY);
       return null;
     }
-  });
-  const [otp, setOtp] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  }, []);
 
   useEffect(() => {
     if (!pending) {
@@ -73,13 +74,16 @@ export default function OtpPage() {
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <InputOtp
-            length={6}
+          <Input
             label="OTP"
             value={otp}
             onValueChange={setOtp}
             isRequired
             autoFocus
+            inputMode="numeric"
+            pattern="[0-9]*"
+            maxLength={6}
+            description="Enter the 6-digit code."
           />
 
           {error ? (
@@ -97,7 +101,7 @@ export default function OtpPage() {
             type="submit"
             isLoading={isSubmitting}
             className="w-full"
-            isDisabled={!pending}
+            isDisabled={!pending || otp.trim().length !== 6}
           >
             Confirm OTP
           </Button>
