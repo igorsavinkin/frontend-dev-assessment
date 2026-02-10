@@ -40,7 +40,7 @@ export default function Home() {
   const router = useRouter();
   const { accountType, setAccountType } = useAccountType();
   const { user, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [balances, setBalances] = useState<Balance[]>([]);
@@ -138,7 +138,7 @@ export default function Home() {
           <div className="flex flex-wrap items-center gap-4">
             <Switch
               isSelected={theme === "dark"}
-              onValueChange={toggleTheme}
+              onValueChange={(value) => setTheme(value ? "dark" : "light")}
               color="primary"
             >
               {theme === "dark" ? "Dark" : "Light"}
