@@ -6,5 +6,18 @@
 }
 
 body {
+  background: var(--app-background);
+  color: var(--app-foreground);
   font-family: var(--font-geist-sans);
+}
+
+:root {
+  --app-background: #f8fafc;
+  --app-foreground: #0f172a;
+}
+
+[data-theme="member-dark"],
+[data-theme="partner-dark"] {
+  --app-background: #0b0b0b;
+  --app-foreground: #e2e8f0;
 }
