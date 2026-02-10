@@ -51,6 +51,10 @@ export function fetchCurrencies() {
   return request<Currency[]>("/currencies");
 }
 
+export function fetchCurrency(id: string) {
+  return request<Currency>(`/currencies/${id}`);
+}
+
 export function fetchBalances(params: {
   page: number;
   limit: number;
