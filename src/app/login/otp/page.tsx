@@ -59,7 +59,7 @@ export default function OtpPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-6 py-12 text-foreground">
+    <div className="flex min-h-screen items-center justify-center bg-[var(--app-background)] px-6 py-12 text-[var(--app-foreground)]">
       <main className="w-full max-w-lg rounded-2xl border border-default-200 bg-content1 px-8 py-10 shadow-sm">
         <div className="space-y-2">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-default-500">

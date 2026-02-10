@@ -121,7 +121,7 @@ export default function Home() {
   }, [currencies]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-[var(--app-background)] text-[var(--app-foreground)]">
       <header className="border-b border-default-200 bg-content1">
         <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-6 px-6 py-6">
           <div>
