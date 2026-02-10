@@ -6,6 +6,5 @@
 }
 
 body {
-  @apply bg-background text-foreground antialiased;
   font-family: var(--font-geist-sans);
 }
