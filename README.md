@@ -11,15 +11,15 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-## Scripts
+## Usage
 
-- `npm run dev` - start dev server
-- `npm run build` - production build
-- `npm run start` - run production build
-- `npm run lint` - lint code
-- `npm run format` - format code with Prettier
+- Login with the demo credentials below.
+- Browse balances on the home page, use search/sort, and scroll to load more.
+- Open a balance to view currency details.
 
-## Auth credentials
+Auth state is persisted in `sessionStorage`.
+
+### Demo credentials
 
 Member:
 
@@ -33,7 +33,28 @@ Partner:
 - Password: `Partner123!`
 - OTP: `262699`
 
-Auth state is persisted in `sessionStorage`.
+## Testing
+
+```bash
+npm run test
+```
+
+Tests live in `src/hooks/__tests__` and `src/components/__tests__`.
+
+## Scripts
+
+- `npm run dev` - start dev server
+- `npm run build` - production build
+- `npm run start` - run production build
+- `npm run lint` - lint code
+- `npm run format` - format code with Prettier
+
+## Architecture decisions & trade-offs
+
+- **State management:** React Context + hooks for auth/theme/account type to keep the footprint small. Trade-off: less scalable than a dedicated state library if shared state grows.
+- **Data access:** a typed `fetch` wrapper in `src/lib/api.ts` to centralize errors and keep components lean. Trade-off: less caching/invalidation than a data-fetching library.
+- **UI/theming:** HeroUI theme plugin and Tailwind for rapid, consistent styling. Trade-off: tied to HeroUI primitives for some components.
+- **Pagination:** IntersectionObserver-based infinite scroll for smooth UX. Trade-off: less explicit control than classic pagination.
 
 ## MockAPI
 
@@ -46,13 +67,6 @@ curl "https://653fb0ea9e8bd3be29e10cd4.mockapi.io/api/v1/currencies"
 curl "https://653fb0ea9e8bd3be29e10cd4.mockapi.io/api/v1/balances?page=1&limit=20&sortBy=amount&order=desc"
 ```
 
-## Architecture notes
-
-- State management: React Context + hooks to keep the footprint small and explicit; shared state is limited (auth/session, theme, account type), so Context avoids the extra boilerplate and dependency overhead of Zustand/Redux while staying easy to test and reason about.
-- Theming: HeroUI theme plugin defines `member/partner` palettes for light/dark.
-- Data access: small `fetch` wrapper with typed API methods and error handling.
-- Infinite scroll: IntersectionObserver hook to fetch additional pages.
-
 ## App structure
 
 - `src/app/page.tsx` - balances list with search/sort/infinite scroll
@@ -61,19 +75,6 @@ curl "https://653fb0ea9e8bd3be29e10cd4.mockapi.io/api/v1/balances?page=1&limit=2
 - `src/contexts` - theme, account type, and auth contexts
 - `src/lib` - API client and auth constants
 
-## Testing
-
-```bash
-npm run test
-```
-
-Tests live in `src/hooks/__tests__` and `src/components/__tests__`.
-
 ## CI
 
 GitHub Actions runs `npm run lint` and `npm run build` on pushes and PRs.
-
-## Accessibility & responsiveness
-
-The UI uses semantic headings, labeled inputs, and responsive layouts.
-Errors are surfaced with alert roles and accessible messaging.
