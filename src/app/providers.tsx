@@ -8,6 +8,7 @@ import {
   AccountTypeProvider,
   useAccountType,
 } from "@/contexts/AccountTypeContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 
 function ThemeBridge({ children }: { children: ReactNode }) {
@@ -27,7 +28,9 @@ export default function Providers({ children }: { children: ReactNode }) {
     <HeroUIProvider>
       <ThemeProvider>
         <AccountTypeProvider>
-          <ThemeBridge>{children}</ThemeBridge>
+          <AuthProvider>
+            <ThemeBridge>{children}</ThemeBridge>
+          </AuthProvider>
         </AccountTypeProvider>
       </ThemeProvider>
     </HeroUIProvider>

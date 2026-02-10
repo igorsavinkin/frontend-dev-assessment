@@ -9,6 +9,9 @@ import {
   type ReactNode,
 } from "react";
 
+import type { AuthUser } from "@/lib/auth";
+import { AUTH_STORAGE_KEY } from "@/lib/auth";
+
 export type AccountType = "member" | "partner";
 
 type AccountTypeContextValue = {
@@ -20,7 +23,23 @@ type AccountTypeContextValue = {
 const AccountTypeContext = createContext<AccountTypeContextValue | null>(null);
 
 export function AccountTypeProvider({ children }: { children: ReactNode }) {
-  const [accountType, setAccountType] = useState<AccountType>("member");
+  const [accountType, setAccountType] = useState<AccountType>(() => {
+    if (typeof window === "undefined") {
+      return "member";
+    }
+
+    const raw = sessionStorage.getItem(AUTH_STORAGE_KEY);
+    if (!raw) {
+      return "member";
+    }
+
+    try {
+      const parsed = JSON.parse(raw) as AuthUser;
+      return parsed.accountType ?? "member";
+    } catch {
+      return "member";
+    }
+  });
 
   const toggleAccountType = useCallback(() => {
     setAccountType((prev) => (prev === "member" ? "partner" : "member"));

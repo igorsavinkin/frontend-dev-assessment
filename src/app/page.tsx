@@ -1,13 +1,17 @@
 "use client";
 
 import { Button, Radio, RadioGroup, Switch } from "@heroui/react";
+import { useRouter } from "next/navigation";
 
 import { useAccountType } from "@/contexts/AccountTypeContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 
 export default function Home() {
   const { accountType, setAccountType } = useAccountType();
+  const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const router = useRouter();
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-6 py-12 text-foreground">
@@ -61,9 +65,24 @@ export default function Home() {
             </div>
           </div>
           <div className="mt-6">
-            <Button color="primary" radius="full">
-              Continue setup
-            </Button>
+            {user ? (
+              <div className="flex flex-wrap items-center gap-3">
+                <Button color="primary" radius="full" onPress={logout}>
+                  Sign out
+                </Button>
+                <span className="text-sm text-default-500">
+                  Logged in as {user.email}
+                </span>
+              </div>
+            ) : (
+              <Button
+                color="primary"
+                radius="full"
+                onPress={() => router.push("/login")}
+              >
+                Go to login
+              </Button>
+            )}
           </div>
         </div>
       </main>
