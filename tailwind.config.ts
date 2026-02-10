@@ -6,7 +6,48 @@ const config = {
   theme: {
     extend: {},
   },
-  plugins: [heroui()],
+  plugins: [
+    heroui({
+      themes: {
+        "member-light": {
+          extend: "light",
+          colors: {
+            primary: {
+              DEFAULT: "#2AFC98",
+              foreground: "#0B2F23",
+            },
+          },
+        },
+        "member-dark": {
+          extend: "dark",
+          colors: {
+            primary: {
+              DEFAULT: "#2AFC98",
+              foreground: "#0B2F23",
+            },
+          },
+        },
+        "partner-light": {
+          extend: "light",
+          colors: {
+            primary: {
+              DEFAULT: "#119DA4",
+              foreground: "#041C1D",
+            },
+          },
+        },
+        "partner-dark": {
+          extend: "dark",
+          colors: {
+            primary: {
+              DEFAULT: "#119DA4",
+              foreground: "#041C1D",
+            },
+          },
+        },
+      },
+    }),
+  ],
 } satisfies Config;
 
 export default config;
