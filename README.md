@@ -48,7 +48,7 @@ curl "https://653fb0ea9e8bd3be29e10cd4.mockapi.io/api/v1/balances?page=1&limit=2
 
 ## Architecture notes
 
-- State management: React Context + hooks to keep the footprint small and explicit.
+- State management: React Context + hooks to keep the footprint small and explicit; shared state is limited (auth/session, theme, account type), so Context avoids the extra boilerplate and dependency overhead of Zustand/Redux while staying easy to test and reason about.
 - Theming: HeroUI theme plugin defines `member/partner` palettes for light/dark.
 - Data access: small `fetch` wrapper with typed API methods and error handling.
 - Infinite scroll: IntersectionObserver hook to fetch additional pages.
