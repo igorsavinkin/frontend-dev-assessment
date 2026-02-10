@@ -83,7 +83,10 @@ export default function OtpPage() {
           />
 
           {error ? (
-            <p className="rounded-lg border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-600">
+            <p
+              role="alert"
+              className="rounded-lg border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-600"
+            >
               {error}
             </p>
           ) : null}

@@ -1,7 +1,5 @@
 "use client";
 
- 
-
 import {
   Button,
   Input,
@@ -208,7 +206,10 @@ export default function Home() {
         </section>
 
         {currenciesError ? (
-          <div className="rounded-xl border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-600">
+          <div
+            role="alert"
+            className="rounded-xl border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-600"
+          >
             {currenciesError}
           </div>
         ) : null}
@@ -226,7 +227,10 @@ export default function Home() {
           ) : null}
 
           {balancesError ? (
-            <div className="rounded-xl border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-600">
+            <div
+              role="alert"
+              className="rounded-xl border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-600"
+            >
               {balancesError}
             </div>
           ) : null}

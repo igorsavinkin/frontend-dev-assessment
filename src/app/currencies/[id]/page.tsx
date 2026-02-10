@@ -1,7 +1,5 @@
 "use client";
 
- 
-
 import { Button, Skeleton, Spinner } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
@@ -65,7 +63,10 @@ export default function CurrencyDetailPage() {
         ) : null}
 
         {error ? (
-          <div className="space-y-4 rounded-2xl border border-danger-200 bg-danger-50 p-6 text-danger-600">
+          <div
+            role="alert"
+            className="space-y-4 rounded-2xl border border-danger-200 bg-danger-50 p-6 text-danger-600"
+          >
             <p className="text-sm">{error}</p>
             <Button color="danger" variant="flat" onPress={loadCurrency}>
               Retry
