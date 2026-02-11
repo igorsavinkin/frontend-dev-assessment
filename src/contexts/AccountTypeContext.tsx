@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -23,23 +24,31 @@ type AccountTypeContextValue = {
 const AccountTypeContext = createContext<AccountTypeContextValue | null>(null);
 
 export function AccountTypeProvider({ children }: { children: ReactNode }) {
-  const [accountType, setAccountType] = useState<AccountType>(() => {
-    if (typeof window === "undefined") {
-      return "member";
+  const [accountType, setAccountType] = useState<AccountType>("member");
+
+  useEffect(() => {
+    let raw: string | null = null;
+    try {
+      raw = sessionStorage.getItem(AUTH_STORAGE_KEY);
+    } catch {
+      return;
     }
 
-    const raw = sessionStorage.getItem(AUTH_STORAGE_KEY);
     if (!raw) {
-      return "member";
+      return;
     }
 
     try {
       const parsed = JSON.parse(raw) as AuthUser;
-      return parsed.accountType ?? "member";
+      const nextType = parsed.accountType ?? "member";
+      const timeoutId = window.setTimeout(() => {
+        setAccountType(nextType);
+      }, 0);
+      return () => window.clearTimeout(timeoutId);
     } catch {
-      return "member";
+      // ignore parsing errors
     }
-  });
+  }, []);
 
   const toggleAccountType = useCallback(() => {
     setAccountType((prev) => (prev === "member" ? "partner" : "member"));

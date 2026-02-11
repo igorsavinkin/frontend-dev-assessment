@@ -16,6 +16,7 @@ Open `http://localhost:3000`.
 - Login with the demo credentials below.
 - Browse balances on the home page, use search/sort, and scroll to load more.
 - Open a balance to view currency details.
+- See `docs/error-handling.md` for a summary of error handling and recovery UX.
 
 Auth state is persisted in `sessionStorage`.
 

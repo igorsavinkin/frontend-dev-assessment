@@ -22,6 +22,7 @@ import { fetchBalances, fetchCurrencies } from "@/lib/api";
 import type { Balance, Currency } from "@/types/api";
 
 const PAGE_SIZE = 20;
+const MAX_SEARCH_LENGTH = 64;
 
 const SORT_OPTIONS = [
   { value: "amount", label: "Amount" },
@@ -39,7 +40,7 @@ type SortOrder = (typeof ORDER_OPTIONS)[number]["value"];
 export default function Home() {
   const router = useRouter();
   const { accountType, setAccountType } = useAccountType();
-  const { user, logout } = useAuth();
+  const { user, logout, isHydrated } = useAuth();
   const { theme, setTheme } = useTheme();
 
   const [currencies, setCurrencies] = useState<Currency[]>([]);
@@ -47,6 +48,7 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingCurrencies, setIsLoadingCurrencies] = useState(false);
   const [currenciesError, setCurrenciesError] = useState<string | null>(null);
   const [balancesError, setBalancesError] = useState<string | null>(null);
 
@@ -57,26 +59,32 @@ export default function Home() {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      setSearch(searchInput.trim());
+      const normalized = searchInput.replace(/\s+/g, " ").trim();
+      setSearch(normalized);
     }, 350);
 
     return () => clearTimeout(timeout);
   }, [searchInput]);
 
-  useEffect(() => {
-    const loadCurrencies = async () => {
-      try {
-        const data = await fetchCurrencies();
-        setCurrencies(data);
-      } catch (error) {
-        setCurrenciesError(
-          error instanceof Error ? error.message : "Unable to load currencies.",
-        );
-      }
-    };
+  const loadCurrencies = useCallback(async () => {
+    setIsLoadingCurrencies(true);
+    setCurrenciesError(null);
 
-    loadCurrencies();
+    try {
+      const data = await fetchCurrencies();
+      setCurrencies(data);
+    } catch (error) {
+      setCurrenciesError(
+        error instanceof Error ? error.message : "Unable to load currencies.",
+      );
+    } finally {
+      setIsLoadingCurrencies(false);
+    }
   }, []);
+
+  useEffect(() => {
+    void loadCurrencies();
+  }, [loadCurrencies]);
 
   const loadBalances = useCallback(
     async (nextPage: number) => {
@@ -154,7 +162,7 @@ export default function Home() {
               <Radio value="member">Member</Radio>
               <Radio value="partner">Partner</Radio>
             </RadioGroup>
-            {user ? (
+            {isHydrated && user ? (
               <Button color="primary" radius="full" onPress={logout}>
                 Sign out
               </Button>
@@ -180,6 +188,8 @@ export default function Home() {
             onValueChange={setSearchInput}
             isClearable
             onClear={() => setSearchInput("")}
+            maxLength={MAX_SEARCH_LENGTH}
+            description={`Up to ${MAX_SEARCH_LENGTH} characters.`}
           />
           <Select
             label="Sort by"
@@ -210,7 +220,17 @@ export default function Home() {
             role="alert"
             className="rounded-xl border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-600"
           >
-            {currenciesError}
+            <p>{currenciesError}</p>
+            <Button
+              className="mt-3"
+              color="danger"
+              size="sm"
+              variant="flat"
+              isLoading={isLoadingCurrencies}
+              onPress={loadCurrencies}
+            >
+              Retry loading currencies
+            </Button>
           </div>
         ) : null}
 
@@ -231,7 +251,16 @@ export default function Home() {
               role="alert"
               className="rounded-xl border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-600"
             >
-              {balancesError}
+              <p>{balancesError}</p>
+              <Button
+                className="mt-3"
+                color="danger"
+                size="sm"
+                variant="flat"
+                onPress={() => loadBalances(1)}
+              >
+                Retry loading balances
+              </Button>
             </div>
           ) : null}
 

@@ -11,6 +11,7 @@ export default function OtpPage() {
   const router = useRouter();
   const { setUser } = useAuth();
   const [otp, setOtp] = useState("");
+  const [otpInputError, setOtpInputError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -19,7 +20,12 @@ export default function OtpPage() {
       return null;
     }
 
-    const raw = sessionStorage.getItem(AUTH_PENDING_KEY);
+    let raw: string | null = null;
+    try {
+      raw = sessionStorage.getItem(AUTH_PENDING_KEY);
+    } catch {
+      return null;
+    }
     if (!raw) {
       return null;
     }
@@ -42,20 +48,32 @@ export default function OtpPage() {
     event.preventDefault();
     if (!pending) return;
 
+    const normalizedOtp = otp.trim();
+    if (!/^\d{6}$/.test(normalizedOtp)) {
+      setOtpInputError("Enter a valid 6-digit OTP.");
+      return;
+    }
+
+    setOtpInputError(null);
     setError(null);
     setIsSubmitting(true);
 
-    const isValid = validateOtp(pending.accountType, otp);
+    const isValid = validateOtp(pending.accountType, normalizedOtp);
     if (!isValid) {
       setError("Invalid OTP. Please try again.");
       setIsSubmitting(false);
       return;
     }
 
-    setUser({ email: pending.email, accountType: pending.accountType });
-    sessionStorage.removeItem(AUTH_PENDING_KEY);
-    setIsSubmitting(false);
-    router.replace("/");
+    try {
+      setUser({ email: pending.email, accountType: pending.accountType });
+      sessionStorage.removeItem(AUTH_PENDING_KEY);
+      setIsSubmitting(false);
+      router.replace("/");
+    } catch {
+      setError("Unable to complete login. Please try again.");
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -77,13 +95,20 @@ export default function OtpPage() {
           <Input
             label="OTP"
             value={otp}
-            onValueChange={setOtp}
+            onValueChange={(value) => {
+              const sanitized = value.replace(/\D/g, "");
+              setOtp(sanitized);
+              if (otpInputError) setOtpInputError(null);
+              if (error) setError(null);
+            }}
             isRequired
             autoFocus
             inputMode="numeric"
             pattern="[0-9]*"
             maxLength={6}
             description="Enter the 6-digit code."
+            isInvalid={Boolean(otpInputError)}
+            errorMessage={otpInputError ?? undefined}
           />
 
           {error ? (

@@ -19,6 +19,8 @@ export default function LoginPage() {
   const { user } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -32,20 +34,47 @@ export default function LoginPage() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const normalizedEmail = email.trim();
+    const normalizedPassword = password.trim();
+    const nextEmailError = normalizedEmail
+      ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)
+        ? null
+        : "Enter a valid email address."
+      : "Email is required.";
+    const nextPasswordError = normalizedPassword
+      ? null
+      : "Password is required.";
+
+    setEmailError(nextEmailError);
+    setPasswordError(nextPasswordError);
     setError(null);
+
+    if (nextEmailError || nextPasswordError) {
+      return;
+    }
+
     setIsSubmitting(true);
 
-    const isValid = validateCredentials(accountType, email, password);
+    const isValid = validateCredentials(
+      accountType,
+      normalizedEmail,
+      normalizedPassword,
+    );
     if (!isValid) {
       setError("Invalid email or password for the selected account type.");
       setIsSubmitting(false);
       return;
     }
 
-    const pending: PendingAuth = { email, accountType };
-    sessionStorage.setItem(AUTH_PENDING_KEY, JSON.stringify(pending));
-    setIsSubmitting(false);
-    router.push("/login/otp");
+    const pending: PendingAuth = { email: normalizedEmail, accountType };
+    try {
+      sessionStorage.setItem(AUTH_PENDING_KEY, JSON.stringify(pending));
+      setIsSubmitting(false);
+      router.push("/login/otp");
+    } catch {
+      setError("Unable to store login state. Please try again.");
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -81,17 +110,29 @@ export default function LoginPage() {
             type="email"
             label="Email"
             value={email}
-            onValueChange={setEmail}
+            onValueChange={(value) => {
+              setEmail(value);
+              if (emailError) setEmailError(null);
+              if (error) setError(null);
+            }}
             placeholder={credentials.email}
             isRequired
+            isInvalid={Boolean(emailError)}
+            errorMessage={emailError ?? undefined}
           />
           <Input
             type="password"
             label="Password"
             value={password}
-            onValueChange={setPassword}
+            onValueChange={(value) => {
+              setPassword(value);
+              if (passwordError) setPasswordError(null);
+              if (error) setError(null);
+            }}
             placeholder={credentials.password}
             isRequired
+            isInvalid={Boolean(passwordError)}
+            errorMessage={passwordError ?? undefined}
           />
 
           {error ? (

@@ -17,36 +17,56 @@ type AuthContextValue = {
   user: AuthUser | null;
   setUser: (user: AuthUser | null) => void;
   logout: () => void;
+  isHydrated: boolean;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(() => {
-    if (typeof window === "undefined") {
-      return null;
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    let raw: string | null = null;
+    try {
+      raw = sessionStorage.getItem(AUTH_STORAGE_KEY);
+    } catch {
+      setIsHydrated(true);
+      return;
     }
 
-    const raw = sessionStorage.getItem(AUTH_STORAGE_KEY);
     if (!raw) {
-      return null;
+      setIsHydrated(true);
+      return;
     }
 
     try {
-      return JSON.parse(raw) as AuthUser;
+      setUser(JSON.parse(raw) as AuthUser);
     } catch {
-      sessionStorage.removeItem(AUTH_STORAGE_KEY);
-      return null;
+      try {
+        sessionStorage.removeItem(AUTH_STORAGE_KEY);
+      } catch {
+        // ignore storage errors
+      }
+    } finally {
+      setIsHydrated(true);
     }
-  });
+  }, []);
 
   useEffect(() => {
-    if (!user) {
-      sessionStorage.removeItem(AUTH_STORAGE_KEY);
+    if (!isHydrated) {
       return;
     }
-    sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
-  }, [user]);
+    try {
+      if (!user) {
+        sessionStorage.removeItem(AUTH_STORAGE_KEY);
+        return;
+      }
+      sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+    } catch {
+      // ignore storage errors to avoid blocking auth state updates
+    }
+  }, [isHydrated, user]);
 
   const logout = useCallback(() => {
     setUser(null);
@@ -57,8 +77,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       setUser,
       logout,
+      isHydrated,
     }),
-    [user, logout],
+    [user, logout, isHydrated],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -13,6 +13,7 @@ type CurrencyDetailCardProps = {
 export default function CurrencyDetailCard({
   currencyId,
 }: CurrencyDetailCardProps) {
+  const normalizedCurrencyId = currencyId.trim();
   const [currency, setCurrency] = useState<Currency | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -22,18 +23,23 @@ export default function CurrencyDetailCard({
     setError(null);
 
     try {
-      const data = await fetchCurrency(currencyId);
+      const data = await fetchCurrency(normalizedCurrencyId);
       setCurrency(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to load currency.");
     } finally {
       setIsLoading(false);
     }
-  }, [currencyId]);
+  }, [normalizedCurrencyId]);
 
   useEffect(() => {
+    if (!normalizedCurrencyId) {
+      setError("Currency ID is missing.");
+      setIsLoading(false);
+      return;
+    }
     void loadCurrency();
-  }, [loadCurrency]);
+  }, [loadCurrency, normalizedCurrencyId]);
 
   if (isLoading) {
     return (
