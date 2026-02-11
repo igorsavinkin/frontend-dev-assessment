@@ -2,6 +2,28 @@
 
 This guide deploys the app on a Debian 11 VPS with systemd + nginx.
 
+## CI/CD (GitHub Actions)
+
+If you want automatic deploys on push to `main`, this repo includes
+`.github/workflows/deploy.yml`.
+
+### Required GitHub secrets
+
+- `VPS_HOST`: VPS public IP or hostname
+- `VPS_USER`: SSH user with sudo privileges
+- `VPS_SSH_KEY`: private key for the SSH user (paste the full key)
+- `VPS_REPO_URL`: repository clone URL (SSH or HTTPS)
+- `VPS_PORT`: SSH port (optional; defaults to `22`)
+
+### Notes
+
+- The workflow deploys to `/var/www/frontend-dev-assessment` and restarts
+  the `frontend-dev-assessment` systemd service.
+- If your repo is private and you use an SSH clone URL, ensure the VPS can
+  access the repo (deploy key on the VPS or use an HTTPS URL with token).
+  For HTTPS, use a deploy token in `VPS_REPO_URL` (e.g.
+  `https://x-access-token:<TOKEN>@github.com/org/repo.git`).
+
 ## Prerequisites
 
 - VPS OS: Debian 11
